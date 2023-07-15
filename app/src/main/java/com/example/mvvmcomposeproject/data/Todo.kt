@@ -14,4 +14,5 @@ class Todo(
     @PrimaryKey val id: Int? = null
 
 ) {
+
 }

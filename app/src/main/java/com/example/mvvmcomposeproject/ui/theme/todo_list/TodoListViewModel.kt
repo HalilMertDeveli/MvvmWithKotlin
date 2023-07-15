@@ -2,6 +2,7 @@ package com.example.mvvmcomposeproject.ui.theme.todo_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mvvmcomposeproject.data.Todo
 import com.example.mvvmcomposeproject.data.TodoRepository
 import com.example.mvvmcomposeproject.util.Routes
 import com.example.mvvmcomposeproject.util.UiEvent
@@ -32,7 +33,11 @@ class TodoListViewModel @Inject constructor(
 
             }
             is TodoListEvent.OnDoneChange ->{
-
+                viewModelScope.launch {
+                    repository.insertTodo(
+                        event.todo,//we cant figure out
+                    )
+                }
             }
             is TodoListEvent.OnTodoClick ->{
                 sendUiEvent(UiEvent.Navigate(Routes.ADD_EDIT_TODO +"?todoId=${event.todo.id}"))
