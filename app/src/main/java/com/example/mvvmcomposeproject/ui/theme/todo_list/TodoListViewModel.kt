@@ -15,40 +15,53 @@ import javax.inject.Inject
 @HiltViewModel
 class TodoListViewModel @Inject constructor(
     private val repository: TodoRepository
-):ViewModel() {
+) : ViewModel() {
 
-    val todos =  repository.getTodos()
+    val todos = repository.getTodos()
 
     private val _uiEvent = Channel<UiEvent>()
 
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    fun onEvent(event: TodoListEvent){
-        when(event){
+    private var deletedTodo: Todo? = null
 
-            is TodoListEvent.OnDeleteTodoClick ->{
+    fun onEvent(event: TodoListEvent) {
+        when (event) {
 
+            is TodoListEvent.OnDeleteTodoClick -> {
+                viewModelScope.launch {
+                    deletedTodo = event.todo
+                    repository.deleteTodo(event.todo)
+                    sendUiEvent(UiEvent.ShowSnackBar(
+                        message="you have deleted do you want to delete this ?",
+                        action = "undo"
+                    ))
+                }
             }
-            is TodoListEvent.OnUndoDeleteClick->{
-
+            is TodoListEvent.OnUndoDeleteClick -> {
+                deletedTodo?.let { todo->
+                    viewModelScope.launch {
+                        repository.insertTodo(todo)
+                    }
+                }
             }
-            is TodoListEvent.OnDoneChange ->{
+            is TodoListEvent.OnDoneChange -> {
                 viewModelScope.launch {
                     repository.insertTodo(
                         event.todo,//we cant figure out
                     )
                 }
             }
-            is TodoListEvent.OnTodoClick ->{
-                sendUiEvent(UiEvent.Navigate(Routes.ADD_EDIT_TODO +"?todoId=${event.todo.id}"))
+            is TodoListEvent.OnTodoClick -> {
+                sendUiEvent(UiEvent.Navigate(Routes.ADD_EDIT_TODO + "?todoId=${event.todo.id}"))
             }
-            is  TodoListEvent.OnAddToDoClick->{
+            is TodoListEvent.OnAddToDoClick -> {
                 sendUiEvent(UiEvent.Navigate(Routes.ADD_EDIT_TODO))
             }
         }
     }
 
-    private fun sendUiEvent(event:UiEvent){
+    private fun sendUiEvent(event: UiEvent) {
         viewModelScope.launch {
             _uiEvent.send(event)
         }
