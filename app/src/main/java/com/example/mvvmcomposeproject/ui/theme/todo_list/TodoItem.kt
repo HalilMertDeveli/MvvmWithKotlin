@@ -13,11 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mvvmcomposeproject.data.Todo
 
 @Composable
 fun TodoItem(
-    todo: Todo,
+    todo: Int,
     onEvent: (TodoListEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {

@@ -1,4 +1,4 @@
-package com.example.mvvmcomposeproject.ui.theme.todo_list
+package com.plcoding.mvvmtodoapp.ui.todo_list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +14,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mvvmcomposeproject.ui.theme.todo_list.TodoItem
+import com.example.mvvmcomposeproject.ui.theme.todo_list.TodoListEvent
+import com.example.mvvmcomposeproject.ui.theme.todo_list.TodoListViewModel
 import com.example.mvvmcomposeproject.util.UiEvent
+
 
 @Composable
 fun TodoListScreen(
@@ -25,15 +29,13 @@ fun TodoListScreen(
     val scaffoldState = rememberScaffoldState()
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
-            when (event) {
+            when(event) {
                 is UiEvent.ShowSnackBar -> {
                     val result = scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message,
-                        actionLabel = event.action,
-                        duration = SnackbarDuration.Long
-
+                        actionLabel = event.action
                     )
-                    if (result == SnackbarResult.ActionPerformed) {
+                    if(result == SnackbarResult.ActionPerformed) {
                         viewModel.onEvent(TodoListEvent.OnUndoDeleteClick)
                     }
                 }
@@ -46,29 +48,30 @@ fun TodoListScreen(
         scaffoldState = scaffoldState,
         floatingActionButton = {
             FloatingActionButton(onClick = {
-
-                viewModel.onEvent(TodoListEvent.OnAddToDoClick)
+                viewModel.onEvent(TodoListEvent.OnAddTodoClick)
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add new Todo",
+                    contentDescription = "Add"
                 )
             }
         }
     ) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(todos.value.size) { todo ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(todos.value.size) { todo->
                 TodoItem(
                     todo = todo,
                     onEvent = viewModel::onEvent,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { viewModel.onEvent(TodoListEvent.OnTodoClick(todo)) }
-                        .padding(16.dp )
+                        .clickable {
+                            viewModel.onEvent(TodoListEvent.OnTodoClick(todo))
+                        }
+                        .padding(16.dp)
                 )
             }
         }
     }
-
-
 }
