@@ -55,7 +55,7 @@ class TodoListViewModel @Inject constructor(
             is TodoListEvent.OnTodoClick -> {
                 sendUiEvent(UiEvent.Navigate(Routes.ADD_EDIT_TODO + "?todoId=${event.todo.id}"))
             }
-            is TodoListEvent.OnAddToDoClick -> {
+            is TodoListEvent.OnAddTodoClick -> {
                 sendUiEvent(UiEvent.Navigate(Routes.ADD_EDIT_TODO))
             }
         }
